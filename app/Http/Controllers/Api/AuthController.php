@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Services\AuthService;
+use App\Http\Requests\Auth\LoginRequest;
 
 class AuthController extends Controller
 {
@@ -18,7 +19,7 @@ class AuthController extends Controller
 
 
 
-    public function register (RegisterRequest $request)
+    public function register(RegisterRequest $request)
     {
         $result = $this->authService->register($request->validated());
 
@@ -27,15 +28,20 @@ class AuthController extends Controller
             'user' => new UserResource($result['user']),
             'token' => $result['token'],
         ], 201);
-
     }
 
-    public function login ()
-    {}
+    public function login(LoginRequest $request)
+    {
+        $result = $this->authService->login($request->validated());
 
-    public function logout ()
-    {}
+        return response()->json([
+            'message' => 'Login successful.',
+            'user' => new UserResource($result['user']),
+            'token' => $result['token'],
+        ]);
+    }
 
-    public function me ()
-    {}
+    public function logout() {}
+
+    public function me() {}
 }
