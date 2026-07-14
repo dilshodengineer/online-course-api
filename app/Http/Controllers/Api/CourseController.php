@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Course\StoreCourseRequest;
+use App\Models\Course;
 use App\Services\CourseService;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,12 @@ class CourseController extends Controller
      */
     public function index()
     {
-        //
+        $courses = Course::latest()->get();
+
+        return response()->json([
+            'message' => 'You got courses successfully',
+            'data' => $courses,
+        ], 200);
     }
 
     /**

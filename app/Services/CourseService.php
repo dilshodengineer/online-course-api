@@ -6,7 +6,18 @@ use App\Models\Course;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Course\StoreCourseRequest;
 
-class CourseService {
+class CourseService
+{
+
+    public function index()
+    {
+        $courses = Course::latest()->get();
+
+        return response()->json([
+            'message' => 'Courses fetched successfully.',
+            'data' => $courses,
+        ]);
+    }
 
     public function store(StoreCourseRequest $request)
     {
@@ -32,5 +43,4 @@ class CourseService {
             ], 201);
         });
     }
-    
 }
