@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Course\StoreCourseRequest;
-use App\Models\Course;
+use App\Http\Requests\Course\UpdateCourseRequest;
 use App\Services\CourseService;
-use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
@@ -22,12 +21,7 @@ class CourseController extends Controller
      */
     public function index()
     {
-        $courses = Course::latest()->get();
-
-        return response()->json([
-            'message' => 'You got courses successfully',
-            'data' => $courses,
-        ], 200);
+        return $this->courseService->index();
     }
 
     /**
@@ -43,15 +37,15 @@ class CourseController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return $this->courseService->show($id);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCourseRequest $request, string $id)
     {
-        //
+        return $this->courseService->update($request, $id);
     }
 
     /**
@@ -59,6 +53,6 @@ class CourseController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        return $this->courseService->destroy($id);
     }
 }

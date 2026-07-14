@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Course;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Course\StoreCourseRequest;
+use App\Http\Requests\Course\UpdateCourseRequest;
+use Illuminate\Support\Facades\Storage;
 
 class CourseService
 {
@@ -18,6 +20,7 @@ class CourseService
             'data' => $courses,
         ]);
     }
+
 
     public function store(StoreCourseRequest $request)
     {
@@ -39,8 +42,72 @@ class CourseService
 
             return response()->json([
                 'message' => 'Course created successfully.',
-                'course' => $course,
+                'data' => $course,
             ], 201);
         });
     }
+
+
+    public function show(string $id)
+    {
+        $course = Course::findOrFail($id);
+
+        return response()->json([
+            'message' => 'Course fetched successfully.',
+            'data' => $course,
+        ]);
+    }
+
+
+    public function update(UpdateCourseRequest $request, string $id)
+    {
+        return DB::transaction(function () use ($request, $id) {
+
+            $course = Course::findOrFail($id);
+
+            $image = $course->image;
+
+            if ($request->hasFile('image')) {
+
+                if ($course->image) {
+                    Storage::disk('public')->delete($course->image);
+                }
+
+                $image = $request->file('image')->store('courses', 'public');
+            }
+
+            $course->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'price' => $request->price,
+                'image' => $image,
+                'is_published' => $request->boolean('is_published'),
+            ]);
+
+            return response()->json([
+                'message' => 'Course updated successfully.',
+                'data' => $course,
+            ]);
+        });
+    }
+
+
+    public function destroy(string $id)
+    {
+        return DB::transaction(function () use ($id) {
+
+            $course = Course::findOrFail($id);
+
+            if ($course->image) {
+                Storage::disk('public')->delete($course->image);
+            }
+
+            $course->delete();
+
+            return response()->json([
+                'message' => 'Course deleted successfully.',
+            ]);
+        });
+    }
+    
 }
